@@ -66,13 +66,10 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            docker build --tag=udacitycapstone .
+            docker build --tag=oluseyi01/udacitycapstone .
             docker image ls
-            dockerpath=oluseyi01/udacitycapstone
-            echo "Docker ID and Image: $dockerpath"
-            docker login -u oluseyi01 -p $DOCKER_PASSWORD &&\
-                      docker tag udacitycapstone $dockerpath
-            docker push $dockerpath
+            docker login -u oluseyi01 -p $DOCKER_PASSWORD
+            docker push oluseyi01/udacitycapstone
 
 workflows:
   my_workflow:
