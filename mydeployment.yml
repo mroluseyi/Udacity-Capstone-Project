@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: UdacityCapstone
+  name: udacitycapstone
   labels:
-    app: UdacityCapstone
+    app: udacitycapstone
     
 spec:
   replicas: 2
@@ -14,16 +14,16 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: UdacityCapstone
+      app: udacitycapstone
   template:
     metadata:
       labels:
-        app: UdacityCapstone
+        app: udacitycapstone
         
     spec:
       containers:
-      - name: UdacityCapstone
-        image: oluseyi01/UdacityCapstone
+      - name: udacitycapstone
+        image: oluseyi01/udacitycapstone
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -32,13 +32,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: UdacityCapstone-lb
+  name: udacitycapstone-lb
   labels:
-    app: UdacityCapstone
+    app: udacitycapstone
     
 spec:
   selector:
-    app: UdacityCapstone
+    app: udacitycapstone
   ports:
     - protocol: TCP
       port: 80
