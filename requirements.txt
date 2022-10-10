@@ -1,6 +1,6 @@
-pylint
-Flask
+pylint==2.4.4
+Flask==1.0.2
 pytest
-pandas
-numphy
+numpy==1.17.2
+pandas==0.24.2
 flasgger
