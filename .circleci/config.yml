@@ -4,6 +4,10 @@
 # 
 
 version: 2.1
+orbs:
+  docker: circleci/docker@1.6.0
+  aws-eks: circleci/aws-eks@0.2.3
+  kubernetes: circleci/kubernetes@0.12.0
   
 jobs:
   build:
@@ -57,25 +61,18 @@ jobs:
             chmod +x /bin/hadolint
             make lint
    docker_build:
-    docker:
-      - image: circleci/golang:1.15
-        auth:
-             username: $DOCKER_USERNAME
-             password: $DOCKER_PASSWORD
-    steps:
-            - checkout
-            - setup_remote_docker
-            - run:
-                  name: Push image to a docker repository
-                  command: |
-                          docker build --tag=UdacityCapstone .
-                          docker image ls
-                          dockerpath=oluseyi01/UdacityCapstone
-                          echo "Docker ID and Image: $dockerpath"
-                          docker login -u oluseyi01 -p $DOCKER_PASSWORD &&\
-                                    docker tag UdacityCapstone $dockerpath
-                          docker push $dockerpath
-  
+     docker:
+       - image: docker:17.05.0-ce-git
+     working_directory: ~/repo
+     steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+            name: Build application Docker image
+            command: |
+              docker build -t $DOCKER_LOGIN/UdacityCapstone .
+              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+              docker push $DOCKER_LOGIN/UdacityCapstone
   
 workflows:
   my_workflow:
