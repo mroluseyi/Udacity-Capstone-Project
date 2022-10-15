@@ -70,13 +70,7 @@ jobs:
             docker image ls
             docker login -u oluseyi01 -p $DOCKER_PASSWORD
             docker push oluseyi01/udacitycapstone
-  
-            
-      - run:
-          name: rollout deployment 
-          command: |
-            kubectl rollout status deployment.apps/capstone-deploy
-            kubectl get all          
+           
 
 workflows:
   my_workflow:
