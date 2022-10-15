@@ -117,5 +117,6 @@ workflows:
           requires: [build]
       - build-and-push-docker-image:
           requires: [test_lint]            
-      - Deploy_to_kube:
-          requires: [build-and-push-docker-image]
+      #- Deploy_to_kube:
+          #requires: [build-and-push-docker-image]
+          
