@@ -114,13 +114,13 @@ jobs:
             kubectl get all              
            
 
-workflows:
-  my_workflow:
-    jobs:
-      - build
-      - test_lint:
-          requires: [build]
-      - build-and-push-docker-image:
-          requires: [test_lint]            
-      - deploy-app-svc-eks:
-          requires: [build-and-push-docker-image]
+#workflows:
+  #my_workflow:
+    #jobs:
+      #- build
+      #- test_lint:
+          #requires: [build]
+      #- build-and-push-docker-image:
+          #requires: [test_lint]            
+      #- deploy-app-svc-eks:
+          #requires: [build-and-push-docker-image]
