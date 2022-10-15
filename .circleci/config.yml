@@ -73,59 +73,46 @@ jobs:
 
   deploy-app-svc-eks:
     docker:
-      - image: ubuntu:18.04
+      - image: amazon/aws-cli
+      
     working_directory: ~/repo
+    
     steps:
       - checkout
-      - run:
-          name: Install Dependencies for Kube configuration
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+      
+      - run: 
+          name: set default region 
+          command: | 
+            aws configure set default.region us-east-1
+            
+      - run: 
+          name: Install kubectl
           command: |
-            # install sudo package 
-            apt-get -y -qq update
-            apt-get -y install sudo
-            # extras for below installs
-            sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
-    
+            yum install -y wget
+            wget -O kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            mv ./kubectl /usr/local/bin/kubectl
+      
       - run:
-          install_awscli:
-            description: Install AWS CLI v2
-            steps:
-              - run:
-                  name: Install AWS CLI v2
-                  command: |
-                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                    unzip awscliv2.zip
-                    sudo ./aws/install
-          install_kubectl:
-            description: Intsall Kubectl v1.19
-            steps:
-              - run:
-                  name: Install Kubectl v1.19
-                  command: |
-                    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-          install_eksctl:
-            description: Intsall eksctl
-            steps:
-              - run:
-                  name: Install eksctl
-                  command: |
-                    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-                    sudo mv /tmp/eksctl /usr/local/bin
-                    
-      - run:
-          name: Update Kube cluster
+          name: Connect cluster
           command: |
-            export TERM=xterm
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region $AWS_DEFAULT_REGION
-            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $ENVIRONMENT_NAME-eks
-            kubectl apply -f mydeployment.yml
-            kubectl get deployment
-            kubectl get nodes -o wide
-            kubectl get pods -o wide
-            kubectl get all               
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME 
+            kubectl get svc
+      - run:
+          name: Deploy cluster and update image
+          command: |
+            kubectl apply -f mydeployment.yml 
+            kubectl get svc
+            kubectl get pods
+            
+      - run:
+          name: rollout deployment 
+          command: |
+            kubectl rollout status deployment.apps/udacitycapstone
+            kubectl get all              
            
 
 workflows:
