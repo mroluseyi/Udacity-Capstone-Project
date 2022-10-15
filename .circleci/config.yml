@@ -87,7 +87,7 @@ jobs:
           name: set default region 
           command: | 
             aws configure set default.region us-east-1
-            
+
       - run: 
           name: Install kubectl
           command: |
@@ -99,8 +99,7 @@ jobs:
       - run:
           name: Connect cluster
           command: |
-            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME 
-            kubectl get svc
+            aws eks --region us-east-1 update-kubeconfig --name udacitycapstone           kubectl get svc
       - run:
           name: Deploy cluster and update image
           command: |
